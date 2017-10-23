@@ -1,0 +1,11 @@
+%YAML:1.0
+Device: ttyACM0
+BaudRate: 115200
+FlowCtrl: false
+Parity: false
+DataBit: 8
+StopBit: 1
+FrameLen: 16
+AccResolution: 8e-4 # g
+Gravrity: 9.80 
+GyroResolution: 0.02 # deg/sec
