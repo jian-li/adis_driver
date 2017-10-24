@@ -21,6 +21,7 @@ AdisDriver::AdisDriver(std::string config_file_path)
 	data_bit_len_ = config["DataBit"].as<int>();
 	stop_bit_len_ = config["StopBit"].as<int>();
 	frame_len_ = config["FrameLen"].as<int>();
+	small_end_ = config["SmallEnd"].as<bool>();
 
 	acc_resolution_ = config["AccResolution"].as<float>();
 	gyro_resolution_ = config["GyroResolution"].as<float>();
@@ -96,17 +97,27 @@ bool AdisDriver::ReceiveData(IMU_Data &imu_data)
 				frame.resize(frame_len_ - 2);
 				port_ptr_->read(frame.data(), frame_len_ - 2);
 
-				if(frame[frame_len_ - 4] && frame[frame_len_ - 3] == 0xDD)
+				if(frame[frame_len_ - 4] == 0xCC && frame[frame_len_ - 3] == 0xDD)
 				{
 					std::cout << "Receive One Frame!" << std::endl;
 
 					for(int i = 0; i < 6; ++i)
 					{
-						imu_data.data[i] = 1.0 * (frame[2*i] | frame[2*i+1] << 8) ;
-						
+						short temp = 0;
+						char* p = (char*)&temp;
+						if(small_end_)
+						{
+							p[0] = frame[2*i];
+							p[1] = frame[2*i+1];
+						}
+						else
+						{
+							p[0] = frame[2*i+1];
+							p[1] = frame[2*i];
+						}
+						imu_data.data[i] = temp;
 					}
 					
-
 					//change the unit of acc data
 					std::cout << "Acc Data: ";
 					for(int i = 0; i < 3; i++)

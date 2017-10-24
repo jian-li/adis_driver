@@ -40,4 +40,6 @@ private:
 	float acc_resolution_;
 	float gyro_resolution_;
 	float gravrity_;
+
+	bool small_end_;
 };
