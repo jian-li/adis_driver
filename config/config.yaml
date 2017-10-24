@@ -8,5 +8,5 @@ StopBit: 1
 FrameLen: 16
 AccResolution: 8e-4 # g
 SmallEnd: true
-Gravrity: 9.80 
+Gravrity: 9.80151 
 GyroResolution: 0.02 # deg/sec
