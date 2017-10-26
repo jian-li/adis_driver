@@ -1,21 +1,25 @@
 #include <iostream>
 #include <QtExtSerialPort/qextserialport.h>
 #include <QCoreApplication>
-
+#include <fstream>
 #include <string>
 
-union IMU_Data
+struct IMU_Data
 {
-	struct 
-	{	
-		float acc_x;
-		float acc_y;
-		float acc_z;
-		float gyro_x;
-		float gyro_y; 
-		float gyro_z;
+	float time;
+	union
+	{
+		struct 
+		{	
+			float acc_x;
+			float acc_y;
+			float acc_z;
+			float gyro_x;
+			float gyro_y; 
+			float gyro_z;
+		};
+		float data[6];
 	};
-	float data[6];
 };
 
 class AdisDriver
@@ -42,4 +46,9 @@ private:
 	float gravrity_;
 
 	bool small_end_;
+	int frame_rate_;
+
+	// Log data to txt
+	bool log_data_;
+	std::ofstream imu_writer_;
 };

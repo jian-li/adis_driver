@@ -5,8 +5,15 @@ FlowCtrl: false
 Parity: false
 DataBit: 8
 StopBit: 1
-FrameLen: 16
+FrameLen: 20
 AccResolution: 8e-4 # g
 SmallEnd: true
 Gravrity: 9.80151 
 GyroResolution: 0.02 # deg/sec
+FrameRate: 200
+
+#IMU Calibration Intrinsic Parameter
+
+
+#Log IMU Data to Txt File, The data will be save in the data folder
+LogData: true

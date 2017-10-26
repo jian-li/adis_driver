@@ -1,9 +1,9 @@
 #include "adis_driver/adis_driver.h"
 #include "yaml-cpp/yaml.h"
 
-AdisDriver::AdisDriver(std::string config_file_path)
+AdisDriver::AdisDriver(std::string pkg_path)
 {
-	YAML::Node config = YAML::LoadFile(config_file_path);
+	YAML::Node config = YAML::LoadFile(pkg_path+ + "/config/config.yaml");
 
 	// if(config)
 	std::string port_path = "/dev/" + config["Device"].as<std::string>();
@@ -22,10 +22,13 @@ AdisDriver::AdisDriver(std::string config_file_path)
 	stop_bit_len_ = config["StopBit"].as<int>();
 	frame_len_ = config["FrameLen"].as<int>();
 	small_end_ = config["SmallEnd"].as<bool>();
+	frame_rate_ = config["FrameRate"].as<int>();
 
 	acc_resolution_ = config["AccResolution"].as<float>();
 	gyro_resolution_ = config["GyroResolution"].as<float>();
 	gravrity_ = config["Gravrity"].as<float>();
+
+	log_data_ = config["LogData"].as<bool>();
 
 	std::cout << "Data Frame Length is: " << frame_len_ << std::endl;
 
@@ -74,11 +77,22 @@ AdisDriver::AdisDriver(std::string config_file_path)
 			port_ptr_->setStopBits(STOP_1); break;
 	}
 	std::cout << "Stop Bit Length is: " << stop_bit_len_ << std::endl;
+
+	std::cout << "IMU Frame Rate is: " << frame_rate_ << std::endl;
+
+	if(log_data_)
+	{
+		imu_writer_.open(pkg_path + "/data/imu.txt");
+	}
+
 }
 
 AdisDriver::~AdisDriver()
 {
-
+	if(log_data_)
+	{
+		imu_writer_.close();
+	}
 }
 
 bool AdisDriver::ReceiveData(IMU_Data &imu_data)
@@ -101,19 +115,39 @@ bool AdisDriver::ReceiveData(IMU_Data &imu_data)
 				{
 					std::cout << "Receive One Frame!" << std::endl;
 
+					int imu_number = 0;
+					char* p = (char*)&imu_number;
+					if(small_end_)
+					{
+						p[0] = frame[0];
+						p[1] = frame[1];
+						p[2] = frame[2];
+						p[3] = frame[3];
+					}
+					else
+					{
+						p[0] = frame[3];
+						p[1] = frame[2];
+						p[2] = frame[1];
+						p[3] = frame[0];
+					}
+
+					imu_data.time = imu_number * 1.0 / frame_rate_;
+					std::cout << "Current IMU TimeStamp is: " << imu_data.time << std::endl;
+
 					for(int i = 0; i < 6; ++i)
 					{
 						short temp = 0;
 						char* p = (char*)&temp;
 						if(small_end_)
 						{
-							p[0] = frame[2*i];
-							p[1] = frame[2*i+1];
+							p[0] = frame[4+ 2*i];
+							p[1] = frame[4+ 2*i+1];
 						}
 						else
 						{
-							p[0] = frame[2*i+1];
-							p[1] = frame[2*i];
+							p[0] = frame[4 + 2*i+1];
+							p[1] = frame[4 + 2*i];
 						}
 						imu_data.data[i] = temp;
 					}
@@ -135,6 +169,13 @@ bool AdisDriver::ReceiveData(IMU_Data &imu_data)
 						std::cout << imu_data.data[3+i] << " ";
 					}
 					std::cout << std::endl;
+
+					if(log_data_)
+					{
+						imu_writer_ << imu_data.time << " " << 
+						imu_data.acc_x << " " << imu_data.acc_y << " " << imu_data.acc_z << " " <<
+						imu_data.gyro_x << " " << imu_data.gyro_y << " " << imu_data.gyro_z << std::endl;
+					}
 
 					return true;
 				}

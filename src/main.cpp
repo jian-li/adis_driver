@@ -30,13 +30,16 @@ int main(int argc, char **argv)
 
 	std::cout << "Current Package Path: " << std::endl << pkg_path << std::endl;
 
-	AdisDriver adis_driver(pkg_path + "/config/config.yaml");
+	AdisDriver adis_driver(pkg_path);
 
 	IMU_Data imu_data;
 
 	ros::NodeHandle nh;
 
 	ros::Publisher imu_pub = nh.advertise<sensor_msgs::Imu>("/imu", 100);
+
+
+	ros::Time start_ts = ros::Time::now();
 
 	while(ros::ok())
 	{
@@ -45,7 +48,7 @@ int main(int argc, char **argv)
 			sensor_msgs::Imu imu_msgs = GenerateRosIMUMsg(imu_data);
 
 			// This should be give by the mcu, TO change its
-			imu_msgs.header.stamp = ros::Time::now();
+			imu_msgs.header.stamp = start_ts + ros::Duration(imu_data.time);
 
 			imu_pub.publish(imu_msgs);
 		}
