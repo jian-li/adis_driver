@@ -165,7 +165,7 @@ bool AdisDriver::ReceiveData(IMU_Data &imu_data)
 					std::cout << "Gyro data: ";
 					for(int i = 0; i < 3; i++)
 					{
-						imu_data.data[3+i] = imu_data.data[3+i]*gyro_resolution_;
+						imu_data.data[3+i] = imu_data.data[3+i]*gyro_resolution_*3.1415926/180;
 						std::cout << imu_data.data[3+i] << " ";
 					}
 					std::cout << std::endl;

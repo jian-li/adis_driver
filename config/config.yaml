@@ -1,5 +1,5 @@
 %YAML:1.0
-Device: ttyACM0
+Device: ttyACM1
 BaudRate: 115200
 FlowCtrl: false
 Parity: false
@@ -10,7 +10,7 @@ AccResolution: 8e-4 # g
 SmallEnd: true
 Gravrity: 9.80151 
 GyroResolution: 0.02 # deg/sec
-FrameRate: 200
+FrameRate: 300
 
 #IMU Calibration Intrinsic Parameter
 
