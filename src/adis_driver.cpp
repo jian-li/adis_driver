@@ -11,9 +11,9 @@ AdisDriver::AdisDriver(std::string pkg_path)
 	port_ptr_ = new QextSerialPort(QString(port_name_), QextSerialPort::EventDriven);
 
 	if(port_ptr_->open(QIODevice::ReadOnly) == true)
-		std::cout << "Open " << port_name_.toStdString() << " success!" << std::endl;
+		std::cout << "==Open " << port_name_.toStdString() << " success!" << std::endl;
 	else
-		std::cout << "Open " << port_name_.toStdString() << " failed!" << std::endl;
+		std::cout << "==Open " << port_name_.toStdString() << " failed!" << std::endl;
 
 	baud_rate_ = config["BaudRate"].as<int>();
 	flow_ctrl_ = config["FlowCtrl"].as<bool>();
@@ -30,29 +30,33 @@ AdisDriver::AdisDriver(std::string pkg_path)
 
 	log_data_ = config["LogData"].as<bool>();
 
-	std::cout << "Data Frame Length is: " << frame_len_ << std::endl;
+	std::cout << "--Data Frame Length is: " << frame_len_ << std::endl;
 
 	if(baud_rate_ == 115200)
 	{
-		std::cout << "Port Baud Rate is: " << baud_rate_ << std::endl;
+		std::cout << "--Port Baud Rate is: " << baud_rate_ << std::endl;
 		port_ptr_->setBaudRate(BAUD115200);
 	}
 
 	if(flow_ctrl_ == true)
 	{
-		std::cout << "Do Flow Control " << std::endl;
+		std::cout << "--Do Flow Control " << std::endl;
 		port_ptr_->setFlowControl(FLOW_HARDWARE);
 	}
 	else
 	{
-		std::cout << "Do not Flow Control " << std::endl;
+		std::cout << "--Do not Flow Control " << std::endl;
 		port_ptr_->setFlowControl(FLOW_OFF);
 	}
 
 	if(parity_chk_ == false)
 	{
-		std::cout << "Do no do Parity Check! " << std::endl;
+		std::cout << "--Do no do Parity Check! " << std::endl;
 		port_ptr_->setParity(PAR_NONE);
+	}
+	else
+	{
+		std::cout << "--Do Parity Check!" << std::endl;
 	}
 
 	switch(data_bit_len_)
@@ -66,7 +70,7 @@ AdisDriver::AdisDriver(std::string pkg_path)
 		default: 
 			port_ptr_->setDataBits(DATA_8); break;
 	}
-	std::cout << "Data Bit Length is: " << data_bit_len_ << std::endl;
+	std::cout << "--Data Bit Length is: " << data_bit_len_ << std::endl;
 
 	switch(stop_bit_len_)
 	{
@@ -76,9 +80,9 @@ AdisDriver::AdisDriver(std::string pkg_path)
 		default: 
 			port_ptr_->setStopBits(STOP_1); break;
 	}
-	std::cout << "Stop Bit Length is: " << stop_bit_len_ << std::endl;
+	std::cout << "--Stop Bit Length is: " << stop_bit_len_ << std::endl;
 
-	std::cout << "IMU Frame Rate is: " << frame_rate_ << std::endl;
+	std::cout << "--IMU Frame Rate is: " << frame_rate_ << std::endl;
 
 	if(log_data_)
 	{

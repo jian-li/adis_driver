@@ -1,5 +1,5 @@
 %YAML:1.0
-Device: ttyACM1
+Device: ttyACM0
 BaudRate: 115200
 FlowCtrl: false
 Parity: false

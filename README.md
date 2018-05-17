@@ -7,10 +7,14 @@ git clone https://github.com/jbeder/yaml-cpp
 cd yaml-cpp
 mkdir build& cd build
 cmake ..
+make -j4
+sudo make install 
 # QtExtSerialPort
-sudo apt-get install libqextserialport-dev
+git clone https://github.com/qextserialport/qextserialport
+qmake
+make 
+sudo make install
 # c++11 is need for yaml-cpp
-
 ```
 After the dependencies is installed, follow the instruction below to build the code.
 ```
@@ -18,11 +22,12 @@ cd path/to/catkin_ws
 catkin_make
 ```
 #Open Configure
-Add the Use to group "dialout"
 ```
-sudo usermod -a -G dialout $USER
+sudo su
+cd path/to/catkin_ws
+source devel/setup.bash
+rosrun adis_driver adis_driver
 ```
-then suspend and reboot.
 
 Q&A:
 If sampled data is strange, you should check you pc is big end or small end. This driver used small end, you can change it in the config file.
